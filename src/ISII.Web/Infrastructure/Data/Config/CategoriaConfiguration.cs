@@ -9,8 +9,10 @@ public class CategoriaConfiguration : IEntityTypeConfiguration<Categoria>
   public void Configure(EntityTypeBuilder<Categoria> builder)
   {
     builder.Property(entity => entity.Id)
-      .HasValueGenerator<VogenIntIdValueGenerator<AppDbContext, Categoria, CategoriaId>>()
       .HasVogenConversion()
+      .HasSentinel(CategoriaId.Nueva)
+      .HasValueGenerator<VogenIntIdValueGenerator<AppDbContext, Categoria, CategoriaId>>()
+      .ValueGeneratedOnAdd()
       .IsRequired();
 
     builder.Property(entity => entity.Nombre)
