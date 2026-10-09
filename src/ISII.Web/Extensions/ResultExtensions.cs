@@ -23,6 +23,10 @@ public static class ResultExtensions
             g => g.Select(e => e.ErrorMessage).ToArray()
           )
       ),
+      ResultStatus.Conflict => TypedResults.Problem(
+        title: "No se pudo crear",
+        detail: string.Join("; ", result.Errors),
+        statusCode: StatusCodes.Status409Conflict),
       _ => TypedResults.Problem(
         title: "Create failed",
         detail: string.Join("; ", result.Errors),
