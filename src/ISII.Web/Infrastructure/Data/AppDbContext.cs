@@ -1,15 +1,17 @@
 using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using ISII.Web.Domain.CartAggregate;
+using ISII.Web.Domain.CategoriaAggregate;
 using ISII.Web.Domain.GuestUserAggregate;
 using ISII.Web.Domain.OrderAggregate;
 using ISII.Web.Domain.ProductAggregate;
 
 namespace ISII.Web.Infrastructure.Data;
-public class AppDbContext(DbContextOptions<AppDbContext> options) : 
+public class AppDbContext(DbContextOptions<AppDbContext> options) :
   DbContext(options)
 {
   public DbSet<Product> Products => Set<Product>();
+  public DbSet<Categoria> Categorias => Set<Categoria>();
   public DbSet<Cart> Carts => Set<Cart>();
   public DbSet<CartItem> CartItems => Set<CartItem>();
   public DbSet<GuestUser> GuestUsers => Set<GuestUser>();
