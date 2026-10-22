@@ -4,6 +4,78 @@ Welcome to your new project generated with the **Minimal Clean Architecture** te
 
 This is a streamlined, single-project Vertical Slice Architecture (VSA) that follows Clean Architecture principles without the overhead of multiple projects. Perfect for smaller applications, MVPs, or teams that want architectural guidance without complex project boundaries.
 
+## Objeto de dominio agregado: Categoría
+
+### Descripción
+
+Una **Categoría** agrupa productos del catálogo (por ejemplo "Bebidas", "Limpieza"). El sistema no tenía ninguna forma de clasificar productos, así que no duplica funcionalidad existente. Es un aggregate propio (`Domain/CategoriaAggregate`) y se relaciona con Producto en una relación **1 a muchos**: una categoría tiene muchos productos y cada producto tiene como máximo una categoría.
+
+### Reglas de negocio
+
+| Regla | Dónde se controla |
+|---|---|
+| El nombre es obligatorio (no vacío ni en blanco) | Validator del endpoint y entidad (`Guard.Against.NullOrWhiteSpace`) |
+| El nombre tiene como máximo 100 caracteres | Validator, entidad y base (`HasMaxLength`) |
+| La descripción es opcional y tiene como máximo 500 caracteres | Validator, entidad y base |
+| No puede haber dos categorías con el mismo nombre, sin importar mayúsculas | Handler (`CategoriaPorNombreSpec`) → 409, e índice único en la base |
+| El Id lo genera el sistema y no puede ser negativo | `CategoriaId` (Vogen) y `VogenIntIdValueGenerator` |
+| Un producto puede no tener categoría | `Product.CategoriaId` es nullable; FK opcional en la base |
+
+### Endpoints
+
+#### `POST /Categorias` — Crear una categoría
+
+Request:
+
+```json
+{
+  "nombre": "Bebidas",
+  "descripcion": "Gaseosas, jugos y aguas"
+}
+```
+
+| Respuesta | Cuándo | Ejemplo |
+|---|---|---|
+| `201 Created` | Se creó la categoría. Header `Location: /Categorias/1` | `{"id":1,"nombre":"Bebidas","descripcion":"Gaseosas, jugos y aguas"}` |
+| `400 Bad Request` | Nombre vacío o demasiado largo, o descripción demasiado larga | `{"statusCode":400,"message":"One or more errors occurred!","errors":{"nombre":["El nombre es obligatorio"]}}` |
+| `409 Conflict` | Ya existe una categoría con ese nombre | `{"title":"No se pudo crear","status":409,"detail":"Ya existe una categoria con ese nombre"}` |
+
+#### `GET /Categorias/{id}` — Obtener una categoría por su Id
+
+| Respuesta | Cuándo | Ejemplo |
+|---|---|---|
+| `200 OK` | La categoría existe | `{"id":1,"nombre":"Bebidas","descripcion":"Gaseosas, jugos y aguas"}` |
+| `400 Bad Request` | El Id es 0 o negativo | `{"statusCode":400,"message":"One or more errors occurred!","errors":{"categoriaId":["El Id de la categoria debe ser mayor a 0"]}}` |
+| `404 Not Found` | No existe una categoría con ese Id | (sin cuerpo) |
+
+Todas estas solicitudes están listas para ejecutar en `src/ISII.Web/api.http`.
+
+### Recorrido de una solicitud (crear)
+
+1. **Endpoint** (`CategoriaFeatures/Crear/CrearEndpoint.cs`): FastEndpoints recibe el JSON y lo convierte en `CrearCategoriaRequest`.
+2. **Validator** (`CrearCategoriaValidator`): antes de ejecutar el endpoint se validan los datos con FluentValidation. Si algo falla responde 400 y no sigue.
+3. **Mediator**: el endpoint arma un `CrearCategoriaCommand` y lo envía con `mediator.Send`.
+4. **Handler** (`CrearCategoriaHandler`): busca con `CategoriaPorNombreSpec` si el nombre ya existe (→ `Result.Conflict`, 409). Si no, crea la entidad con `Categoria.Crear(...)`, que vuelve a validar las reglas de dominio.
+5. **Repositorio** (`EfRepository<Categoria>`): `AddAsync` agrega la entidad y guarda los cambios.
+6. **EF Core + SQLite**: `CategoriaConfiguration` define cómo se mapea a la tabla `Categorias`; el `VogenIntIdValueGenerator` asigna el próximo Id.
+7. **Respuesta**: el handler devuelve un `CategoriaDto`, que el endpoint convierte en `CategoriaRecord` y responde 201 con `ToCreatedResult`.
+
+La consulta por Id sigue el mismo camino con `ObtenerPorIdEndpoint` → `ObtenerCategoriaPorIdValidator` → `ObtenerCategoriaQuery` → `ObtenerCategoriaHandler` (usa `IReadRepository`, de solo lectura, y `CategoriaPorIdSpec`).
+
+### Pruebas (`tests/ISII.Tests`)
+
+| Archivo | Qué verifica |
+|---|---|
+| `CategoriaTest.cs` | Reglas de dominio: valores asignados, Id nuevo, nombre vacío/null/largo, descripción larga, Id negativo |
+| `CrearCategoriaValidatorTest.cs` | Validación del request de creación (casos válidos e inválidos) |
+| `ObtenerCategoriaPorIdValidatorTest.cs` | Validación del Id en la consulta |
+| `CategoriaPorNombreSpecTest.cs` | La búsqueda por nombre no distingue mayúsculas |
+| `CrearCategoriaHandlerTest.cs` | Lógica de aplicación: crea si el nombre no existe; devuelve Conflict y no guarda si ya existe (repositorio simulado con NSubstitute) |
+| `ObtenerCategoriaHandlerTest.cs` | Devuelve la categoría si existe o NotFound si no |
+| `ProductTest.cs` | Un producto arranca sin categoría y `AsignarCategoria` la asigna |
+
+Se ejecutan con `dotnet test`.
+
 ## Getting Started
 
 ### Build and Run

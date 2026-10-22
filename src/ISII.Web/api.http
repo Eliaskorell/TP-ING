@@ -19,6 +19,43 @@ Content-Type: application/json
   "unitPrice": 29.99
 }
 
+### Crear Categoria (201 Created)
+POST {{MinimalClean_HostAddress}}/categorias
+Content-Type: application/json
+
+{
+  "nombre": "Bebidas",
+  "descripcion": "Gaseosas, jugos y aguas"
+}
+
+### Crear Categoria con nombre repetido (409 Conflict)
+POST {{MinimalClean_HostAddress}}/categorias
+Content-Type: application/json
+
+{
+  "nombre": "bebidas"
+}
+
+### Crear Categoria sin nombre (400 Bad Request)
+POST {{MinimalClean_HostAddress}}/categorias
+Content-Type: application/json
+
+{
+  "nombre": ""
+}
+
+### Obtener Categoria por Id (200 OK)
+GET {{MinimalClean_HostAddress}}/categorias/1
+Accept: application/json
+
+### Obtener Categoria inexistente (404 Not Found)
+GET {{MinimalClean_HostAddress}}/categorias/9999
+Accept: application/json
+
+### Obtener Categoria con Id invalido (400 Bad Request)
+GET {{MinimalClean_HostAddress}}/categorias/0
+Accept: application/json
+
 ### Add to Cart (Anonymous User - creates cart)
 POST {{MinimalClean_HostAddress}}/cart
 Content-Type: application/json
