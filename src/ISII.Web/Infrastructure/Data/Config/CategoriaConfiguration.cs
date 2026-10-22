@@ -12,7 +12,6 @@ public class CategoriaConfiguration : IEntityTypeConfiguration<Categoria>
       .HasVogenConversion()
       .HasSentinel(CategoriaId.Nueva)
       .HasValueGenerator<VogenIntIdValueGenerator<AppDbContext, Categoria, CategoriaId>>()
-      .ValueGeneratedOnAdd()
       .IsRequired();
 
     builder.Property(entity => entity.Nombre)

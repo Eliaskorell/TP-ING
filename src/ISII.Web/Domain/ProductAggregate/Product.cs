@@ -1,4 +1,5 @@
 ﻿using Ardalis.GuardClauses;
+using ISII.Web.Domain.CategoriaAggregate;
 
 namespace ISII.Web.Domain.ProductAggregate;
 
@@ -21,6 +22,7 @@ public class Product : EntityBase<Product, ProductId>, IAggregateRoot
 
   public string Name { get; private set; } = string.Empty;
   public decimal UnitPrice { get; private set; }
+  public CategoriaId? CategoriaId { get; private set; }
 
   public Product UpdateName(string newName)
   {
@@ -31,6 +33,12 @@ public class Product : EntityBase<Product, ProductId>, IAggregateRoot
   public Product UpdatePrice(decimal newPrice)
   {
     UnitPrice = newPrice;
+    return this;
+  }
+
+  public Product AsignarCategoria(CategoriaId categoriaId)
+  {
+    CategoriaId = categoriaId;
     return this;
   }
 }

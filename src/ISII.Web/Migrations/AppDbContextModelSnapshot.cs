@@ -148,6 +148,9 @@ namespace ISII.Web.Migrations
                     b.Property<int>("Id")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("CategoriaId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -158,6 +161,8 @@ namespace ISII.Web.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoriaId");
 
                     b.ToTable("Products");
 
@@ -196,6 +201,13 @@ namespace ISII.Web.Migrations
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ISII.Web.Domain.ProductAggregate.Product", b =>
+                {
+                    b.HasOne("ISII.Web.Domain.CategoriaAggregate.Categoria", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriaId");
                 });
 
             modelBuilder.Entity("ISII.Web.Domain.CartAggregate.Cart", b =>

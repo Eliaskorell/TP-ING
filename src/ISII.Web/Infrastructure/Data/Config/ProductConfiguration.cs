@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using ISII.Web.Domain.CategoriaAggregate;
 using ISII.Web.Domain.ProductAggregate;
 
 namespace ISII.Web.Infrastructure.Data.Config;
@@ -20,6 +21,11 @@ public class ProductConfiguration : IEntityTypeConfiguration<Product>
     builder.Property(entity => entity.UnitPrice)
       .HasPrecision(18, 2)
       .IsRequired();
+
+    builder.HasOne<Categoria>()
+      .WithMany()
+      .HasForeignKey(entity => entity.CategoriaId)
+      .IsRequired(false);
 
     builder.HasData(
       new Product(

@@ -1,3 +1,4 @@
+using ISII.Web.Domain.CategoriaAggregate;
 using ISII.Web.Domain.ProductAggregate;
 
 namespace ISII.Tests;
@@ -79,6 +80,26 @@ public class ProductTest
 
         Assert.Equal(id, product.Id);
         Assert.Equal(name, product.Name);
+    }
+
+    [Fact]
+    public void Constructor_ShouldLeaveCategoriaIdNull()
+    {
+        var product = new Product(ProductId.New, "Mouse", 25m);
+
+        Assert.Null(product.CategoriaId);
+    }
+
+    [Fact]
+    public void AsignarCategoria_ShouldSetCategoriaIdAndReturnSameInstance()
+    {
+        var product = new Product(ProductId.New, "Mouse", 25m);
+        var categoriaId = CategoriaId.From(1);
+
+        var result = product.AsignarCategoria(categoriaId);
+
+        Assert.Same(product, result);
+        Assert.Equal(categoriaId, product.CategoriaId);
     }
 
     [Fact]
