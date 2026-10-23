@@ -12,16 +12,18 @@ public class Categoria : EntityBase<Categoria, CategoriaId>, IAggregateRoot
   public Categoria(CategoriaId id, string nombre, string? descripcion)
   {
     Guard.Against.NullOrWhiteSpace(nombre, nameof(nombre));
-    Guard.Against.StringTooLong(nombre, NombreLongitudMaxima, nameof(nombre));
+    var nombreRecortado = nombre.Trim();
+    Guard.Against.StringTooLong(nombreRecortado, NombreLongitudMaxima, nameof(nombre));
 
-    if (descripcion != null)
+    var descripcionRecortada = descripcion?.Trim();
+    if (descripcionRecortada != null)
     {
-      Guard.Against.StringTooLong(descripcion, DescripcionLongitudMaxima, nameof(descripcion));
+      Guard.Against.StringTooLong(descripcionRecortada, DescripcionLongitudMaxima, nameof(descripcion));
     }
 
     Id = id;
-    Nombre = nombre;
-    Descripcion = descripcion;
+    Nombre = nombreRecortado;
+    Descripcion = descripcionRecortada;
   }
 
   public static Categoria Crear(string nombre, string? descripcion)

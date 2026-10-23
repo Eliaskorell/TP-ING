@@ -10,7 +10,7 @@ public class CrearCategoriaHandler(IRepository<Categoria> repository)
 {
   public async ValueTask<Result<CategoriaDto>> Handle(CrearCategoriaCommand request, CancellationToken cancellationToken)
   {
-    var spec = new CategoriaPorNombreSpec(request.Nombre);
+    var spec = new CategoriaPorNombreSpec(request.Nombre.Trim());
     var existente = await repository.FirstOrDefaultAsync(spec, cancellationToken);
     if (existente != null)
     {

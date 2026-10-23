@@ -36,6 +36,15 @@ public class CategoriaTest
         Assert.Null(categoria.Descripcion);
     }
 
+    [Fact]
+    public void Crear_ShouldTrimNombreAndDescripcion()
+    {
+        var categoria = Categoria.Crear(" Bebidas ", " Gaseosas, jugos y aguas ");
+
+        Assert.Equal("Bebidas", categoria.Nombre);
+        Assert.Equal("Gaseosas, jugos y aguas", categoria.Descripcion);
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
