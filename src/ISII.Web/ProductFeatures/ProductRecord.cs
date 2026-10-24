@@ -1,3 +1,3 @@
 namespace ISII.Web.ProductFeatures;
 
-public record ProductRecord(int Id, string Name, decimal UnitPrice);
+public record ProductRecord(int Id, string Name, decimal UnitPrice, int? CategoriaId = null);

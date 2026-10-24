@@ -19,6 +19,30 @@ Content-Type: application/json
   "unitPrice": 29.99
 }
 
+### Asignar Categoria a un Producto (200 OK)
+PUT {{MinimalClean_HostAddress}}/products/1/categoria
+Content-Type: application/json
+
+{
+  "categoriaId": 1
+}
+
+### Asignar Categoria a un Producto inexistente (404 Not Found)
+PUT {{MinimalClean_HostAddress}}/products/9999/categoria
+Content-Type: application/json
+
+{
+  "categoriaId": 1
+}
+
+### Asignar Categoria inexistente a un Producto (404 Not Found)
+PUT {{MinimalClean_HostAddress}}/products/1/categoria
+Content-Type: application/json
+
+{
+  "categoriaId": 9999
+}
+
 ### Crear Categoria (201 Created)
 POST {{MinimalClean_HostAddress}}/categorias
 Content-Type: application/json

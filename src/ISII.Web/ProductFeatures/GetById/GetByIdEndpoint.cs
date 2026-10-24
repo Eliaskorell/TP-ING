@@ -70,5 +70,5 @@ public sealed class GetProductByIdMapper
   : Mapper<GetProductByIdRequest, ProductRecord, ProductDto>
 {
   public override ProductRecord FromEntity(ProductDto e)
-    => new(e.Id.Value, e.Name, e.UnitPrice);
+    => new(e.Id.Value, e.Name, e.UnitPrice, e.CategoriaId?.Value);
 }

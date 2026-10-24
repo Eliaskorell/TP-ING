@@ -117,7 +117,7 @@ public sealed class ListProductsMapper
   public override ProductListResponse FromEntity(PagedResult<ProductDto> e)
   {
     var items = e.Items
-      .Select(p => new ProductRecord(p.Id.Value, p.Name, p.UnitPrice))
+      .Select(p => new ProductRecord(p.Id.Value, p.Name, p.UnitPrice, p.CategoriaId?.Value))
       .ToList();
 
     return new ProductListResponse(items, e.Page, e.PerPage, e.TotalCount, e.TotalPages);

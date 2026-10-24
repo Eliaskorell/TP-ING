@@ -14,7 +14,7 @@ public class ListProductsQueryService(AppDbContext db) : IListProductsQueryServi
       .OrderBy(p => p.Id)
       .Skip((page - 1) * perPage)
       .Take(perPage)
-      .Select(p => new ProductDto(p.Id, p.Name, p.UnitPrice))
+      .Select(p => new ProductDto(p.Id, p.Name, p.UnitPrice, p.CategoriaId))
       .AsNoTracking()
       .ToListAsync();
 
