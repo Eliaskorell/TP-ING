@@ -16,6 +16,7 @@ public class CategoriaConfiguration : IEntityTypeConfiguration<Categoria>
 
     builder.Property(entity => entity.Nombre)
       .HasMaxLength(Categoria.NombreLongitudMaxima)
+      .UseCollation("NOCASE")
       .IsRequired();
 
     builder.HasIndex(entity => entity.Nombre)
