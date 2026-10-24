@@ -48,6 +48,7 @@ public class CategoriaTest
     [Theory]
     [InlineData("")]
     [InlineData("   ")]
+    [InlineData("\t")]
     public void Crear_ShouldThrow_WhenNombreIsEmpty(string nombre)
     {
         Assert.Throws<ArgumentException>(() => Categoria.Crear(nombre, null));
@@ -83,6 +84,48 @@ public class CategoriaTest
         var descripcion = new string('a', Categoria.DescripcionLongitudMaxima + 1);
 
         Assert.Throws<ArgumentException>(() => Categoria.Crear("Bebidas", descripcion));
+    }
+
+    [Fact]
+    public void Crear_ShouldAllowDescripcionWithMaxLength()
+    {
+        var descripcion = new string('a', Categoria.DescripcionLongitudMaxima);
+
+        var categoria = Categoria.Crear("Bebidas", descripcion);
+
+        Assert.Equal(descripcion, categoria.Descripcion);
+    }
+
+    [Fact]
+    public void Crear_ShouldTrimDescripcion_WhenDescripcionHasMaxLengthWithSurroundingWhitespace()
+    {
+        var descripcion = new string('a', Categoria.DescripcionLongitudMaxima);
+
+        var categoria = Categoria.Crear("Bebidas", $" {descripcion} ");
+
+        Assert.Equal(descripcion, categoria.Descripcion);
+    }
+
+    [Theory]
+    [InlineData("")]
+    [InlineData("   ")]
+    [InlineData("\t")]
+    [InlineData("\n")]
+    public void Crear_ShouldSetDescripcionToNull_WhenDescripcionIsEmptyOrWhitespace(string descripcion)
+    {
+        var categoria = Categoria.Crear("Bebidas", descripcion);
+
+        Assert.Null(categoria.Descripcion);
+    }
+
+    [Fact]
+    public void Crear_ShouldTrimNombre_WhenNombreHasMaxLengthWithSurroundingWhitespace()
+    {
+        var nombre = new string('a', Categoria.NombreLongitudMaxima);
+
+        var categoria = Categoria.Crear($" {nombre} ", null);
+
+        Assert.Equal(nombre, categoria.Nombre);
     }
 
     [Fact]

@@ -15,6 +15,7 @@ public class CategoriaPorNombreSpecTest
     [InlineData("Bebidas")]
     [InlineData("bebidas")]
     [InlineData("BEBIDAS")]
+    [InlineData("bEbIdAs")]
     public void Evaluate_ShouldFindCategoria_IgnoringCase(string nombre)
     {
         var spec = new CategoriaPorNombreSpec(nombre);

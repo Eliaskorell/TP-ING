@@ -80,11 +80,12 @@ La consulta por Id sigue el mismo camino con `ObtenerPorIdEndpoint` → `Obtener
 
 | Archivo | Qué verifica |
 |---|---|
-| `CategoriaTest.cs` | Reglas de dominio: valores asignados, Id nuevo, nombre vacío/null/largo, descripción larga, Id negativo |
-| `CrearCategoriaValidatorTest.cs` | Validación del request de creación (casos válidos e inválidos) |
+| `CategoriaTest.cs` | Reglas de dominio: valores asignados, Id nuevo, nombre vacío/null/largo/con espacios, descripción vacía/null/larga/con espacios (se guarda como null o recortada según el caso), Id negativo |
+| `CrearCategoriaValidatorTest.cs` | Validación del request de creación: nombre y descripción vacíos, nulos, con espacios, en el límite de caracteres y pasados el límite, con el mensaje de error esperado en cada caso |
 | `ObtenerCategoriaPorIdValidatorTest.cs` | Validación del Id en la consulta |
-| `CategoriaPorNombreSpecTest.cs` | La búsqueda por nombre no distingue mayúsculas |
-| `CrearCategoriaHandlerTest.cs` | Lógica de aplicación: crea si el nombre no existe; devuelve Conflict y no guarda si ya existe (repositorio simulado con NSubstitute) |
+| `CategoriaPorNombreSpecTest.cs` | La búsqueda por nombre no distingue mayúsculas (incluso con mayúsculas y minúsculas mezcladas) y no encuentra nombres inexistentes |
+| `CrearCategoriaHandlerTest.cs` | Lógica de aplicación: crea si el nombre no existe; devuelve Conflict y no guarda si ya existe (igual, en mayúsculas, en minúsculas o con espacios de más); si la descripción es solo espacios la guarda como null (repositorio simulado con NSubstitute) |
+| `CategoriaIndiceUnicoTest.cs` | Prueba de integración con SQLite en memoria: la base rechaza (`DbUpdateException`) guardar "bebidas" si ya existe "Bebidas", por el índice único con collation `NOCASE` |
 | `ObtenerCategoriaHandlerTest.cs` | Devuelve la categoría si existe o NotFound si no |
 | `ProductTest.cs` | Un producto arranca sin categoría y `AsignarCategoria` la asigna |
 | `AsignarCategoriaValidatorTest.cs` | Validación de los Ids del request (producto y categoría) |

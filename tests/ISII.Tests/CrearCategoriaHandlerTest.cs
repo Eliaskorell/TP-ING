@@ -33,13 +33,17 @@ public class CrearCategoriaHandlerTest
             Arg.Is<Categoria>(c => c.Nombre == "Bebidas"), Arg.Any<CancellationToken>());
     }
 
-    [Fact]
-    public async Task Handle_ShouldReturnConflictAndNotAdd_WhenNombreAlreadyExists()
+    [Theory]
+    [InlineData("Bebidas")]
+    [InlineData("bebidas")]
+    [InlineData("BEBIDAS")]
+    [InlineData(" Bebidas ")]
+    public async Task Handle_ShouldReturnConflictAndNotAdd_WhenNombreAlreadyExists(string nombre)
     {
         var existente = new Categoria(CategoriaId.From(1), "Bebidas", null);
         _repository.FirstOrDefaultAsync(Arg.Any<ISpecification<Categoria>>(), Arg.Any<CancellationToken>())
             .Returns(existente);
-        var command = new CrearCategoriaCommand("bebidas", null);
+        var command = new CrearCategoriaCommand(nombre, null);
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
@@ -48,16 +52,15 @@ public class CrearCategoriaHandlerTest
     }
 
     [Fact]
-    public async Task Handle_ShouldReturnConflictAndNotAdd_WhenNombreAlreadyExistsWithExtraSpaces()
+    public async Task Handle_ShouldSetDescripcionToNull_WhenDescripcionIsOnlyWhitespace()
     {
-        var existente = new Categoria(CategoriaId.From(1), "Bebidas", null);
         _repository.FirstOrDefaultAsync(Arg.Any<ISpecification<Categoria>>(), Arg.Any<CancellationToken>())
-            .Returns(existente);
-        var command = new CrearCategoriaCommand(" Bebidas ", null);
+            .Returns((Categoria?)null);
+        var command = new CrearCategoriaCommand("Bebidas", "   ");
 
         var result = await _handler.Handle(command, CancellationToken.None);
 
-        Assert.Equal(ResultStatus.Conflict, result.Status);
-        await _repository.DidNotReceive().AddAsync(Arg.Any<Categoria>(), Arg.Any<CancellationToken>());
+        Assert.True(result.IsSuccess);
+        Assert.Null(result.Value.Descripcion);
     }
 }
