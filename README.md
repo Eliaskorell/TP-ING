@@ -12,6 +12,7 @@ Una **Categoría** agrupa productos del catálogo (por ejemplo "Bebidas", "Limpi
 | El nombre (y la descripción) se guardan sin espacios de más al principio ni al final | Entidad (`.Trim()`), y el handler de creación busca duplicados ya con el nombre recortado |
 | El nombre tiene como máximo 100 caracteres | Validator, entidad y base (`HasMaxLength`) |
 | La descripción es opcional y tiene como máximo 500 caracteres | Validator, entidad y base |
+| Si la descripción viene vacía o con solo espacios, se guarda como null (no como cadena vacía) | Entidad |
 | No puede haber dos categorías con el mismo nombre, sin importar mayúsculas | Handler (`CategoriaPorNombreSpec`) → 409, e índice único en la base |
 | El Id lo genera el sistema y no puede ser negativo | `CategoriaId` (Vogen) y `VogenIntIdValueGenerator` |
 | Un producto puede no tener categoría | `Product.CategoriaId` es nullable; FK opcional en la base |

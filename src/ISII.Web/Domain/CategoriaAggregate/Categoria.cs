@@ -16,7 +16,11 @@ public class Categoria : EntityBase<Categoria, CategoriaId>, IAggregateRoot
     Guard.Against.StringTooLong(nombreRecortado, NombreLongitudMaxima, nameof(nombre));
 
     var descripcionRecortada = descripcion?.Trim();
-    if (descripcionRecortada != null)
+    if (string.IsNullOrEmpty(descripcionRecortada))
+    {
+      descripcionRecortada = null;
+    }
+    else
     {
       Guard.Against.StringTooLong(descripcionRecortada, DescripcionLongitudMaxima, nameof(descripcion));
     }
