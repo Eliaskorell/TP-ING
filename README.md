@@ -1,9 +1,3 @@
-# ISII
-
-Welcome to your new project generated with the **Minimal Clean Architecture** template!
-
-This is a streamlined, single-project Vertical Slice Architecture (VSA) that follows Clean Architecture principles without the overhead of multiple projects. Perfect for smaller applications, MVPs, or teams that want architectural guidance without complex project boundaries.
-
 ## Objeto de dominio agregado: Categoría
 
 ### Descripción
@@ -15,6 +9,7 @@ Una **Categoría** agrupa productos del catálogo (por ejemplo "Bebidas", "Limpi
 | Regla | Dónde se controla |
 |---|---|
 | El nombre es obligatorio (no vacío ni en blanco) | Validator del endpoint y entidad (`Guard.Against.NullOrWhiteSpace`) |
+| El nombre (y la descripción) se guardan sin espacios de más al principio ni al final | Entidad (`.Trim()`), y el handler de creación busca duplicados ya con el nombre recortado |
 | El nombre tiene como máximo 100 caracteres | Validator, entidad y base (`HasMaxLength`) |
 | La descripción es opcional y tiene como máximo 500 caracteres | Validator, entidad y base |
 | No puede haber dos categorías con el mismo nombre, sin importar mayúsculas | Handler (`CategoriaPorNombreSpec`) → 409, e índice único en la base |
@@ -48,6 +43,22 @@ Request:
 | `400 Bad Request` | El Id es 0 o negativo | `{"statusCode":400,"message":"One or more errors occurred!","errors":{"categoriaId":["El Id de la categoria debe ser mayor a 0"]}}` |
 | `404 Not Found` | No existe una categoría con ese Id | (sin cuerpo) |
 
+#### `PUT /Products/{ProductId}/Categoria` — Asignarle una categoría a un producto
+
+Request:
+
+```json
+{
+  "categoriaId": 1
+}
+```
+
+| Respuesta | Cuándo | Ejemplo |
+|---|---|---|
+| `200 OK` | Se asignó la categoría al producto | `{"id":1,"name":"Coffee Mug","unitPrice":9.99,"categoriaId":1}` |
+| `400 Bad Request` | `ProductId` o `categoriaId` es 0 o negativo | `{"statusCode":400,"message":"One or more errors occurred!","errors":{"categoriaId":["El Id de la categoria debe ser mayor a 0"]}}` |
+| `404 Not Found` | No existe el producto, o no existe la categoría (se verifica antes de guardar, para que nunca salte un error por la clave foránea) | (sin cuerpo) |
+
 Todas estas solicitudes están listas para ejecutar en `src/ISII.Web/api.http`.
 
 ### Recorrido de una solicitud (crear)
@@ -73,6 +84,8 @@ La consulta por Id sigue el mismo camino con `ObtenerPorIdEndpoint` → `Obtener
 | `CrearCategoriaHandlerTest.cs` | Lógica de aplicación: crea si el nombre no existe; devuelve Conflict y no guarda si ya existe (repositorio simulado con NSubstitute) |
 | `ObtenerCategoriaHandlerTest.cs` | Devuelve la categoría si existe o NotFound si no |
 | `ProductTest.cs` | Un producto arranca sin categoría y `AsignarCategoria` la asigna |
+| `AsignarCategoriaValidatorTest.cs` | Validación de los Ids del request (producto y categoría) |
+| `AsignarCategoriaHandlerTest.cs` | NotFound si no existe el producto, NotFound y no guarda si no existe la categoría, asigna y guarda en el caso feliz |
 
 Se ejecutan con `dotnet test`.
 
